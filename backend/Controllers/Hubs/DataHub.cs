@@ -1,6 +1,8 @@
 using System;
 using System.Reactive.Linq;
+using System.Threading.Channels;
 using System.Threading.Tasks;
+using backend.Extensions;
 using Microsoft.AspNetCore.SignalR;
 
 namespace backend.Hubs
@@ -14,17 +16,16 @@ namespace backend.Hubs
             return Clients.All.SendAsync("hello", string.Format(HelloWorldFormat, name));
         }
 
-         public IObservable<string> Time()
+        public ChannelReader<string> Time()
         {
-            return Observable.Create(
-                async (IObserver<string> observer) =>
+            var timeObservable = Observable
+                .Interval(TimeSpan.FromSeconds(1))
+                .Select((_, x) =>
                 {
-                    while (true)
-                    {
-                        observer.OnNext(DateTime.UtcNow.ToString());
-                        await Task.Delay(1000);
-                    }
+                    return DateTime.UtcNow.ToString();
                 });
+
+            return timeObservable.AsChannelReader();
         }
     }
 }
