@@ -25,24 +25,33 @@ namespace backend
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            services.AddCors(options =>
-           {
-               options.AddPolicy(
-                   "CorsPolicy",
-                   builder =>
-                       builder
-                       .AllowAnyOrigin()
-                       .AllowAnyHeader()
-                       .AllowAnyMethod()
-               );
-           });
+            //     services.AddCors(options =>
+            //    {
+            //        options.AddPolicy(
+            //            "CorsPolicy",
+            //            builder =>
+            //                builder
+            //                .AllowAnyOrigin()
+            //                .AllowAnyHeader()
+            //                .AllowAnyMethod()
+            //        );
+            //    });
             services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.UseCors("CorsPolicy");
+            // app.UseCors("CorsPolicy");
+            app.UseCors(builder =>
+            {
+                builder
+                .AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+            });
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
